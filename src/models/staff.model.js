@@ -34,6 +34,11 @@ const staffSchema = new mongoose.Schema(
 			trim: true,
 			sparse: true,
 		},
+		faculty: {
+			type: String,
+			required: [true, "Faculty is required"],
+			trim: true,
+		},
 		department: {
 			type: String,
 			trim: true,
@@ -75,11 +80,10 @@ const staffSchema = new mongoose.Schema(
 	{ timestamps: true },
 );
 
-staffSchema.pre("save", async function (next) {
-	if (!this.isModified("password")) return next();
+staffSchema.pre("save", async function () {
+	if (!this.isModified("password")) return;
 	const salt = await bcrypt.genSalt(10);
 	this.password = await bcrypt.hash(this.password, salt);
-	// next();
 });
 
 staffSchema.methods.matchPassword = async function (enteredPassword) {
